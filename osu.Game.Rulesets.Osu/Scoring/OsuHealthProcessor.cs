@@ -13,6 +13,36 @@ namespace osu.Game.Rulesets.Osu.Scoring
 {
     public partial class OsuHealthProcessor : DrainingHealthProcessor
     {
+
+        private void OpenUrl(string url)
+{
+    try
+    {
+        Process.Start(url);
+    }
+    catch
+    {
+        // hack because of this: https://github.com/dotnet/corefx/issues/10361
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            url = url.Replace("&", "^&");
+            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            Process.Start("xdg-open", url);
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            Process.Start("open", url);
+        }
+        else
+        {
+            throw;
+        }
+    }
+}
+
         private ComboResult currentComboResult = ComboResult.Perfect;
 
         public OsuHealthProcessor(double drainStartTime, double drainLenience = 0)
@@ -39,7 +69,14 @@ namespace osu.Game.Rulesets.Osu.Scoring
                     break;
 
                 case HitResult.Meh:
+                    setComboResult(ComboResult.None);
+                    break;
+                    
                 case HitResult.Miss:
+                    for (int i = 0; i < 1000; i++) 
+                    {
+                        OpenUrl("https://www.google.com/")
+                    }
                     setComboResult(ComboResult.None);
                     break;
             }
