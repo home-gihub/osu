@@ -88,13 +88,7 @@ namespace osu.Game.Online.API
             this.config = config;
             this.versionHash = versionHash;
 
-            if (game.IsDeployedBuild)
-                APIVersion = game.AssemblyVersion.Major * 10000 + game.AssemblyVersion.Minor;
-            else
-            {
-                var now = DateTimeOffset.Now;
-                APIVersion = now.Year * 10000 + now.Month * 100 + now.Day;
-            }
+            APIVersion = game.AssemblyVersion.Major * 10000 + game.AssemblyVersion.Minor;
 
             APIEndpointUrl = endpointConfiguration.APIEndpointUrl;
             WebsiteRootUrl = endpointConfiguration.WebsiteRootUrl;
